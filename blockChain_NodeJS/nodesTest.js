@@ -57,6 +57,16 @@ superagent
 superagent
     .post(node1_url + 'transactions')
     .query({
+        sendAddr: 'Zoe',
+        recAddr: 'Mary',
+        value: 40
+    }).end((err, res) => {
+        // send the req
+    });
+
+superagent
+    .post(node1_url + 'transactions')
+    .query({
         sendAddr: 'Helen',
         recAddr: 'Gary',
         value: 9

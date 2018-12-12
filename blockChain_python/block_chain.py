@@ -98,8 +98,10 @@ class BlockChain:
     def valid_proof(self, last_proof: int, proof: int) -> bool:
         verify = f'{last_proof}{proof}'.encode()
         verify_hash = hashlib.sha256(verify).hexdigest()
+        target = 2 ** (256 - 1)
+        target_hash = hashlib.sha256(f'{target}'.encode()).hexdigest()
 
-        if verify_hash[0:4] == "0000":
+        if verify_hash <= target_hash:
             return True
         else:
             return False

@@ -131,7 +131,7 @@ const BlockChain = {
     getTransaction: () => {
         return state$3.transactions;
     },
-    idPowValid: pow => {
+    checkPOW: pow => {
         try {
             if (!pow.startsWith("0x")) {
                 pow = "0x" + pow;
@@ -157,7 +157,7 @@ const BlockChain = {
                     throw new Error("Error: invalid previous block.");
                 }
 
-                if (index > 0 && !BlockChain.idPowValid(Block.hash(item))) {
+                if (index > 0 && !BlockChain.checkPOW(Block.hash(item))) {
                     throw new Error("Error: invalid proof of work.");
                 }
             });
@@ -175,7 +175,7 @@ const BlockChain = {
         const newBlock = Block.generate(lastBlock.blockNumber + 1, transactions, 0, Block.hash(lastBlock));
         while (true) {
             let sha = Block.hash(newBlock);
-            if (BlockChain.idPowValid(sha) || newBlock.nonce > 1000) {
+            if (BlockChain.checkPOW(sha) || newBlock.nonce > 1000) {
                 console.log("A block is mined: ", sha);
                 break;
             }
@@ -184,8 +184,8 @@ const BlockChain = {
 
         return newBlock;
     },
-    createBlock: () => {
-        const newBlock = BlockChain.mine(BlockChain.transactions);
+    createBlock: trans => {
+        const newBlock = BlockChain.mine(trans);
 
         state$3.blocks.push(newBlock);
         BlockChain.transactions = [];

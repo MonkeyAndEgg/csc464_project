@@ -49,9 +49,9 @@ router.post('/nodes', async (ctx, next) => {
     } else {
         console.log("receive data", nodeId, nodeUrl)
         if (blockChain.register(nodeId, nodeUrl)) {
-            ctx.response.body = `register node ${nodeId} `;
+            ctx.response.body = `Added node ${nodeId} `;
         } else {
-            ctx.response.body = `register node already exists！ `;
+            ctx.response.body = `The node ${nodeId} already exists！ `;
         }
     }
 });
@@ -75,9 +75,9 @@ router.post('/transactions', async (ctx, next) => {
 });
 
 router.get('/mine', async (ctx, next) => {
-    const newBlock = blockChain.createBlock()
+    const newBlock = blockChain.createBlock(blockChain.getTransaction())
     console.log(blockChain.getBlocks())
-    ctx.response.body = `mine new block ${newBlock.blockNumber} `;
+    ctx.response.body = `The block #${newBlock.blockNumber} is mined.`;
 });
 
 router.put('/nodes/consensus', async (ctx, next) => {
@@ -85,13 +85,13 @@ router.put('/nodes/consensus', async (ctx, next) => {
     let reqs = blockChain.getNodes().map(node => axios.get(`${node.url}blocks`))
 
     if (!reqs.length) {
-        ctx.response.body = `no node need to sync！ `;
+        ctx.response.body = "No update required.";
     } else {
         await axios.all(reqs).then(axios.spread((...blockChains) => {
             if (blockChain.consensus(blockChains.map(res=> res.data ))) {
-                ctx.response.body = `get consensus！ `;
+                ctx.response.body = "Consensus reached.";
             } else {
-                ctx.response.body = `no consensus get！ `;
+                ctx.response.body = "Failed to reach consensus.";
             }
         }))
     }
